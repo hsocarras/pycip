@@ -15,5 +15,8 @@ class DataType:
     BOOL = BOOL
     SINT = SINT 
     INT = INT
-    DINT = DINT # not tested
+    DINT = DINT 
+    LINT = LINT 
+    USINT = USINT 
+    UINT = UINT # not tested
     

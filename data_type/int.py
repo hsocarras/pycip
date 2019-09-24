@@ -4,6 +4,12 @@ from .base_datatype import BaseDatatype
 class INT(BaseDatatype):
     """Class to implement INT datatype of CIP especification.
 
+    Methods
+    -------
+    class Encode
+
+    class Decode
+
     """ 
 
     _id_code = 0xC3

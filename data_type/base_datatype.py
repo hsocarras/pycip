@@ -14,7 +14,7 @@ class BaseDatatype:
     -------
     classmethod ValidateValue
 
-    classmethod GetIdCode
+    classmethod GetIDCode
 
     staticmethod Identify
     """ 

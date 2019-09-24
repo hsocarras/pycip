@@ -4,11 +4,23 @@ from .base_datatype import BaseDatatype
 class DINT(BaseDatatype):
     """Class to implement DINT datatype of CIP especification.
 
+    Methods
+    -------
+    class Encode
+
+    class Decode
+
+    classmethod ValidateValue
+
+    classmethod GetIDCode
+
+    staticmethod Identify
+
     """ 
 
-    id_code = 0xC4
-    min_value = -0x80000000
-    max_value = 0x7FFFFFFF - 1
+    _id_code = 0xC4
+    _min_value = -0x80000000
+    _max_value = 0x7FFFFFFF - 1
 
     @classmethod
     def Encode(cls, value):
@@ -21,16 +33,18 @@ class DINT(BaseDatatype):
 
         Return
         -------
-        Byte Array --  Encode value in a byte array to send trough a network
+        Byte Array --  Encoded value in a byte array to send trough a network
 
         """
-        buffer = None
-        if cls.ValidateValue(value):
-            buffer = value.to_byte(4, 'litle')
-            return buffer
+        if isinstance(value, int):
+            buffer = None
+            if cls.ValidateValue(value):
+                buffer = value.to_bytes(4, 'little', signed = True)
+                return buffer
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise Exception('value is not valid integer')
-
+            raise TypeError('value must be int')
         
 
     @classmethod
@@ -39,19 +53,22 @@ class DINT(BaseDatatype):
 
         Parameters
         -----------
-        buffer: byte array
+        buffer: bytes
             buffer to decode
 
         Return
         -------
         value : int
-            Decode value from a byte array received trough a network
+            Encoded value in the byte array received
 
         """
-        value = None
+        if isinstance(buffer, bytes):
+            value = None
 
-        if len(buffer) == 4:
-            value = int.from_bytes(buffer, 'litle', signed=True)
-            return value
+            if len(buffer) == 4:
+                value = int.from_bytes(buffer, 'little', signed=True)
+                return value
+            else:
+                raise ValueError('buffer length mitsmatch with DINT encoding')
         else:
-            raise Exception('buffer length mitsmatch with dint encoding')
+            raise TypeError('buffer must be bytes')

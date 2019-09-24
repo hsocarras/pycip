@@ -4,6 +4,12 @@ from .base_datatype import BaseDatatype
 class SINT(BaseDatatype):
     """Class to implement SINT datatype of CIP especification.
 
+    Methods
+    -------
+    class Encode
+
+    class Decode
+
     """ 
 
     _id_code = 0xC2
