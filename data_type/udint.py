@@ -4,11 +4,23 @@ from .base_datatype import BaseDatatype
 class UDINT(BaseDatatype):
     """Class to implement UDINT datatype of CIP especification.
 
+    Methods
+    -------
+    class Encode
+
+    class Decode
+
+    classmethod ValidateValue
+
+    classmethod GetIDCode
+
+    staticmethod Identify
+
     """ 
 
-    id_code = 0xC8
-    min_value = 0x00
-    max_value = 0xFFFFFFFF
+    _id_code = 0xC8
+    _min_value = 0x00
+    _max_value = 0xFFFFFFFF
 
     @classmethod
     def Encode(cls, value):
@@ -24,12 +36,15 @@ class UDINT(BaseDatatype):
         Byte Array --  Encode value in a byte array to send trough a network
 
         """
-        buffer = None
-        if cls.ValidateValue(value):
-            buffer = value.to_byte(4, 'litle')
-            return buffer
+        if isinstance(value, int):
+            buffer = None
+            if cls.ValidateValue(value):
+                buffer = value.to_bytes(4, 'little')
+                return buffer
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise Exception('value is not valid integer')
+            raise TypeError('value must be int')
 
         
 
@@ -39,19 +54,22 @@ class UDINT(BaseDatatype):
 
         Parameters
         -----------
-        buffer: byte array
+        buffer: bytes
             buffer to decode
 
         Return
         -------
         value : int
-            Decode value from a byte array received trough a network
+            Encoded value in the byte array received
 
         """
-        value = None
+        if isinstance(buffer, bytes):
+            value = None
 
-        if len(buffer) == 4:
-            value = int.from_bytes(buffer, 'litle', signed=False)
-            return value
+            if len(buffer) == 4:
+                value = int.from_bytes(buffer, 'little', signed=False)
+                return value
+            else:
+                raise ValueError('buffer length mitsmatch with UDINT encoding')
         else:
-            raise Exception('buffer length mitsmatch with udint encoding')
+            raise TypeError('buffer must be bytes')

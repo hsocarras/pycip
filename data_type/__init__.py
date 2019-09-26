@@ -1,4 +1,5 @@
 
+from .base_datatype import BaseDatatype
 from .bool import BOOL
 from .sint import SINT
 from .int  import INT
@@ -10,6 +11,7 @@ from .udint import UDINT
 from .ulint import ULINT
 from .real import REAL
 from .lreal import LREAL
+from .date import DATE
 
 class DataType:
     BOOL = BOOL
@@ -18,5 +20,12 @@ class DataType:
     DINT = DINT 
     LINT = LINT 
     USINT = USINT 
-    UINT = UINT # not tested
-    
+    UINT = UINT 
+    UDINT = UDINT 
+    ULINT = ULINT 
+    REAL = REAL 
+    LREAL = LREAL 
+
+    DATE = DATE # not tested
+
+    Identify = BaseDatatype.Identify

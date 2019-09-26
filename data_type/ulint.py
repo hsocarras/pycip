@@ -4,11 +4,23 @@ from .base_datatype import BaseDatatype
 class ULINT(BaseDatatype):
     """Class to implement ULINT datatype of CIP especification.
 
+    Methods
+    -------
+    class Encode
+
+    class Decode
+
+    classmethod ValidateValue
+
+    classmethod GetIDCode
+
+    staticmethod Identify
+
     """ 
 
-    id_code = 0xC9
-    min_value = 0x00
-    max_value = 0xFFFFFFFFFFFFFFFF
+    _id_code = 0xC9
+    _min_value = 0x00
+    _max_value = 0xFFFFFFFFFFFFFFFF
 
     @classmethod
     def Encode(cls, value):
@@ -22,14 +34,16 @@ class ULINT(BaseDatatype):
         Return
         -------
         Byte Array --  Encode value in a byte array to send trough a network
-
         """
-        buffer = None
-        if cls.ValidateValue(value):
-            buffer = value.to_byte(8, 'litle')
-            return buffer
+        if isinstance(value, int):
+            buffer = None
+            if cls.ValidateValue(value):
+                buffer = value.to_bytes(8, 'little')
+                return buffer
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise Exception('value is not valid integer')
+            raise TypeError('value must be int')
 
         
 
@@ -39,19 +53,22 @@ class ULINT(BaseDatatype):
 
         Parameters
         -----------
-        buffer: byte array
+        buffer: bytes
             buffer to decode
 
         Return
         -------
         value : int
-            Decode value from a byte array received trough a network
+            Encoded value in the byte array received
 
         """
-        value = None
+        if isinstance(buffer, bytes):
+            value = None
 
-        if len(buffer) == 8:
-            value = int.from_bytes(buffer, 'litle', signed=False)
-            return value
+            if len(buffer) == 8:
+                value = int.from_bytes(buffer, 'little', signed=False)
+                return value
+            else:
+                raise ValueError('buffer length mitsmatch with ULINT encoding')
         else:
-            raise Exception('buffer length mitsmatch with ulint encoding')
+            raise TypeError('buffer must be bytes')

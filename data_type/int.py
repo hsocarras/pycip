@@ -10,6 +10,12 @@ class INT(BaseDatatype):
 
     class Decode
 
+    classmethod ValidateValue
+
+    classmethod GetIDCode
+
+    staticmethod Identify
+
     """ 
 
     _id_code = 0xC3

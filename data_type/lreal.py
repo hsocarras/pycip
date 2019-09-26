@@ -1,14 +1,26 @@
 from .base_datatype import BaseDatatype
-
+import struct
 
 class LREAL(BaseDatatype):
     """Class to implement LREAL datatype of CIP especification.
 
+    Methods
+    -------
+    class Encode
+
+    class Decode
+
+    classmethod ValidateValue
+
+    classmethod GetIDCode
+
+    staticmethod Identify
+
     """ 
 
-    id_code = 0xCB
-    min_value = -1.7e+308
-    max_value = 1.7e+308
+    _id_code = 0xCB
+    _min_value = -1.7e+308
+    _max_value = 1.7e+308
 
     @classmethod
     def Encode(cls, value):
@@ -24,13 +36,15 @@ class LREAL(BaseDatatype):
         Byte Array --  Encode value in a byte array to send trough a network
 
         """
-        buffer = None
-        if cls.ValidateValue(value):
-            buffer = struct.pack('<d', value)
-            return buffer
+        if isinstance(value, int) or isinstance(value, float):
+            buffer = None
+            if cls.ValidateValue(value, integer = False):
+                buffer = struct.pack('<d', value)
+                return buffer
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise Exception('value is not valid number')
-
+            raise TypeError('value must be a number')
         
 
     @classmethod
@@ -48,10 +62,13 @@ class LREAL(BaseDatatype):
             Decode value from a byte array received trough a network
 
         """
-        value = None
+        if isinstance(buffer, bytes):
+            value = None
 
-        if len(buffer) == 8:
-            value = struct.unpack('<d', buffer)
-            return value
+            if len(buffer) == 8:
+                value = struct.unpack('<d', buffer)
+                return round(value[0], 10)
+            else:
+                raise ValueError('buffer length mitsmatch with lreal encoding')
         else:
-            raise Exception('buffer length mitsmatch with lreal encoding')
+            raise TypeError('buffer must be bytes')
