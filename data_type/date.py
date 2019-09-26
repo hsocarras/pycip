@@ -8,11 +8,11 @@ class DATE(BaseDatatype):
 
     Methods
     -------
-    class Encode
+    class encode
 
-    class Decode
+    class decode
 
-    classmethod ValidateValue
+    classmethod validate_range
 
     classmethod GetIDCode
 
@@ -29,8 +29,8 @@ class DATE(BaseDatatype):
     _max_value = 0xFFFF
 
     @classmethod
-    def Encode(cls, value):
-        """ Encode a value in a byte array
+    def encode(cls, value):
+        """ encode a value in a byte array
 
         Parameters
         -----------
@@ -39,12 +39,12 @@ class DATE(BaseDatatype):
 
         Return
         -------
-        Byte Array --  Encode value in a byte array to send trough a network
+        Byte Array --  encode value in a byte array to send trough a network
 
         """
         if isinstance(value, int):
             buffer = None
-            if cls.ValidateValue(value):
+            if cls.validate_range(value):
                 buffer = value.to_bytes(2, 'little', signed = False)
                 return buffer
             else:
@@ -54,8 +54,8 @@ class DATE(BaseDatatype):
         
 
     @classmethod
-    def Decode(cls, buffer):
-        """ Decode a value from a byte array
+    def decode(cls, buffer):
+        """ decode a value from a byte array
 
         Parameters
         -----------
@@ -65,7 +65,7 @@ class DATE(BaseDatatype):
         Return
         -------
         value : int
-            Decode value from a byte array received trough a network
+            decode value from a byte array received trough a network
 
         """
         if isinstance(buffer, bytes):
@@ -80,8 +80,8 @@ class DATE(BaseDatatype):
             raise TypeError('buffer must be bytes')
 
     @classmethod
-    def ToString(cls, value):
-        """ Encode a date string from D#1972-01-01 to D#2151-06-06
+    def to_string(cls, value):
+        """ encode a date string from D#1972-01-01 to D#2151-06-06
 
         Parameters
         -----------
@@ -97,7 +97,7 @@ class DATE(BaseDatatype):
         if isinstance(value, int):
             format_str = "D#"
             init_date = date(1972, 1, 1)
-            if cls.ValidateValue(value):
+            if cls.validate_range(value):
                 d = timedelta(days = value)
                 _date = init_date + d
                 return format_str + _date.isoformat()
@@ -107,8 +107,8 @@ class DATE(BaseDatatype):
             raise TypeError('value must be int')
 
     @classmethod
-    def FromString(cls, date_str):
-        """Decode a date string from D#1972-01-01 to D#2151-06-06
+    def from_string(cls, date_str):
+        """decode a date string from D#1972-01-01 to D#2151-06-06
 
         Parameters
         -----------
@@ -127,7 +127,7 @@ class DATE(BaseDatatype):
         diff = _date - init_date
         value = int(diff.total_seconds()/86400)
 
-        if cls.ValidateValue(value):            
+        if cls.validate_range(value):            
             return value
         else:
             raise ValueError('value is not in valid cip range')

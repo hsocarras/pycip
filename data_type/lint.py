@@ -6,15 +6,15 @@ class LINT(BaseDatatype):
 
     Methods
     -------
-    class Encode
+    class encode
 
-    class Decode
+    class decode
 
-    classmethod ValidateValue
+    classmethod validate_range
 
-    classmethod GetIDCode
+    classmethod get_id_code
 
-    staticmethod Identify
+    staticmethod identify
 
     """ 
 
@@ -23,8 +23,8 @@ class LINT(BaseDatatype):
     _max_value = 0x7FFFFFFFFFFFFFFF - 1
 
     @classmethod
-    def Encode(cls, value):
-        """ Encode a value in a byte array
+    def encode(cls, value):
+        """ encode a value in a byte array
 
         Parameters
         -----------
@@ -33,12 +33,12 @@ class LINT(BaseDatatype):
 
         Return
         -------
-        Byte Array --  Encoded value in a byte array to send trough a network
+        Byte Array --  encoded value in a byte array to send trough a network
 
         """
         if isinstance(value, int):
             buffer = None
-            if cls.ValidateValue(value):
+            if cls.validate_range(value):
                 buffer = value.to_bytes(8, 'little', signed = True)
                 return buffer
             else:
@@ -49,8 +49,8 @@ class LINT(BaseDatatype):
         
 
     @classmethod
-    def Decode(cls, buffer):
-        """ Decode a value from a byte array
+    def decode(cls, buffer):
+        """ decode a value from a byte array
 
         Parameters
         -----------
@@ -60,7 +60,7 @@ class LINT(BaseDatatype):
         Return
         -------
         value : int
-            Encoded value in the byte array received
+            encoded value in the byte array received
 
         """
         if isinstance(buffer, bytes):

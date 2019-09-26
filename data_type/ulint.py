@@ -6,11 +6,11 @@ class ULINT(BaseDatatype):
 
     Methods
     -------
-    class Encode
+    class encode
 
-    class Decode
+    class decode
 
-    classmethod ValidateValue
+    classmethod validate_range
 
     classmethod GetIDCode
 
@@ -23,8 +23,8 @@ class ULINT(BaseDatatype):
     _max_value = 0xFFFFFFFFFFFFFFFF
 
     @classmethod
-    def Encode(cls, value):
-        """ Encode a value in a byte array
+    def encode(cls, value):
+        """ encode a value in a byte array
 
         Parameters
         -----------
@@ -33,11 +33,11 @@ class ULINT(BaseDatatype):
 
         Return
         -------
-        Byte Array --  Encode value in a byte array to send trough a network
+        Byte Array --  encode value in a byte array to send trough a network
         """
         if isinstance(value, int):
             buffer = None
-            if cls.ValidateValue(value):
+            if cls.validate_range(value):
                 buffer = value.to_bytes(8, 'little')
                 return buffer
             else:
@@ -48,8 +48,8 @@ class ULINT(BaseDatatype):
         
 
     @classmethod
-    def Decode(cls, buffer):
-        """ Decode a value from a byte array
+    def decode(cls, buffer):
+        """ decode a value from a byte array
 
         Parameters
         -----------
@@ -59,7 +59,7 @@ class ULINT(BaseDatatype):
         Return
         -------
         value : int
-            Encoded value in the byte array received
+            encoded value in the byte array received
 
         """
         if isinstance(buffer, bytes):

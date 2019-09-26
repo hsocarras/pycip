@@ -6,15 +6,15 @@ class REAL(BaseDatatype):
 
     Methods
     -------
-    class Encode
+    class encode
 
-    class Decode
+    class decode
 
-    classmethod ValidateValue
+    classmethod validate_range
 
-    classmethod GetIDCode
+    classmethod get_id_code
 
-    staticmethod Identify
+    staticmethod identify
 
     """ 
 
@@ -23,8 +23,8 @@ class REAL(BaseDatatype):
     _max_value = 3.4e+38
 
     @classmethod
-    def Encode(cls, value):
-        """ Encode a value in a byte array
+    def encode(cls, value):
+        """ encode a value in a byte array
 
         Parameters
         -----------
@@ -33,12 +33,12 @@ class REAL(BaseDatatype):
 
         Return
         -------
-        Byte Array --  Encode value in a byte array to send trough a network
+        Byte Array --  encode value in a byte array to send trough a network
 
         """
         if isinstance(value, int) or isinstance(value, float):
             buffer = None
-            if cls.ValidateValue(value, integer = False):
+            if cls.validate_range(value, integer = False):
                 buffer = struct.pack('<f', value)
                 return buffer
             else:
@@ -49,8 +49,8 @@ class REAL(BaseDatatype):
         
 
     @classmethod
-    def Decode(cls, buffer):
-        """ Decode a value from a byte array
+    def decode(cls, buffer):
+        """ decode a value from a byte array
 
         Parameters
         -----------
@@ -60,7 +60,7 @@ class REAL(BaseDatatype):
         Return
         -------
         value : float
-            Decode value from a byte array received trough a network
+            decode value from a byte array received trough a network
 
         """
         if isinstance(buffer, bytes):

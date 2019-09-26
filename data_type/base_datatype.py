@@ -12,15 +12,15 @@ class BaseDatatype:
 
     Methods
     -------
-    classmethod ValidateValue
+    classmethod validate_reange
 
-    classmethod GetIDCode
+    classmethod get_id_code
 
-    staticmethod Identify
+    staticmethod identify
     """ 
     
     @classmethod
-    def ValidateValue(cls, value, integer = True):
+    def validate_range(cls, value, integer = True):
         """ Check if value are in allowable range
 
         Parameters
@@ -50,7 +50,7 @@ class BaseDatatype:
                 return False
 
     @classmethod
-    def GetIDCode(cls):
+    def get_id_code(cls):
         """ Return de id code for primitive datatype on CIP
 
         Return
@@ -61,7 +61,7 @@ class BaseDatatype:
         return cls._id_code
 
     @staticmethod
-    def Identify(id_code):
+    def identify(id_code):
         """ Get de datatype from identification code
 
         Parameters

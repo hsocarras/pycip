@@ -6,9 +6,15 @@ class SINT(BaseDatatype):
 
     Methods
     -------
-    class Encode
+    class encode
 
-    class Decode
+    class decode
+
+    classmethod validate_range
+
+    classmethod get_id_code
+
+    staticmethod identify
 
     """ 
 
@@ -17,8 +23,8 @@ class SINT(BaseDatatype):
     _max_value = 127
 
     @classmethod
-    def Encode(cls, value):
-        """ Encode a value in a byte array
+    def encode(cls, value):
+        """ encode a value in a byte array
         
         Parameters
         -----------
@@ -27,12 +33,12 @@ class SINT(BaseDatatype):
 
         Return
         -------
-        Byte Array --  Encoded value in a byte array to send through a network
+        Byte Array --  encoded value in a byte array to send through a network
 
         """
         if isinstance(value, int):
             buffer = None
-            if cls.ValidateValue(value):
+            if cls.validate_range(value):
                 buffer = value.to_bytes(1, 'little', signed = True)
                 return buffer
             else:
@@ -42,7 +48,7 @@ class SINT(BaseDatatype):
 
     
     @classmethod
-    def Decode(cls, buffer):
+    def decode(cls, buffer):
         """ Decode a value from a byte array
 
         Parameters
@@ -53,7 +59,7 @@ class SINT(BaseDatatype):
         Return
         -------
         value : int
-            Encoded value in the byte array received
+            encoded value in the byte array received
 
         """
 

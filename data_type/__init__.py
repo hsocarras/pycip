@@ -26,6 +26,6 @@ class DataType:
     REAL = REAL 
     LREAL = LREAL 
 
-    DATE = DATE # not tested
+    DATE = DATE 
 
-    Identify = BaseDatatype.Identify
+    identify = BaseDatatype.identify
