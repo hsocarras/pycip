@@ -5,19 +5,35 @@ from .tod import TOD
 class DT(BaseDatatype):
     """Class to implement Date and time datatype of CIP especification.
 
+     Methods
+    -------
+    class encode
+
+    class decode
+
+    classmethod validate_range
+
+    classmethod get_id_code
+
+    classmethod to_string
+
+    classmethod from_string
+
+    staticmethod identify
+
     """ 
 
-    id_code = 0xCF
+    _id_code = 0xCF
 
     @classmethod
-    def ValidateValue(time_value, date_value):
-        if(TOD.ValidateValue(time_value) and DATE.ValidateValue(date_value))
+    def validate_range(cls, time_value, date_value):
+        if TOD.validate_range(time_value) and DATE.validate_range(date_value):
             return True
         else:
             return False
 
     @classmethod
-    def Encode(cls, time_value, date_value):
+    def encode(cls, time_value, date_value):
         """ Encode a value in a byte array
 
         Parameters
@@ -32,17 +48,20 @@ class DT(BaseDatatype):
 
         """
         buffer = None
-        if cls.ValidateValue(time_value, date_value):
-            buffer_time = time_value.to_byte(4, 'litle')
-            buffer_date = date_value.to_byte(2, 'litle')
+        try:           
+            buffer_time = TOD.encode(time_value)
+            buffer_date = DATE.encode(date_value)
             buffer = buffer_time + buffer_date
             return buffer
-        else:
-            raise Exception('value is not in valid range')
+        except TypeError:
+            raise TypeError('values must be int')
+        except ValueError:
+            raise ValueError('value is not in valid cip range')
+            
         
 
     @classmethod
-    def Decode(cls, buffer):
+    def decode(cls, buffer):
         """ Decode a value from a byte array
 
         Parameters
@@ -56,27 +75,30 @@ class DT(BaseDatatype):
             Decode value from a byte array received trough a network
 
         """
-        time_value = None
-        date_value = None
+        if isinstance(buffer, bytes):
+            time_value = None
+            date_value = None
 
-        time_buffer = None
-        date_buffer = None
+            time_buffer = None
+            date_buffer = None
 
-        if len(buffer) == 6:
-            time_buffer = buffer[0:4]
-            date_buffer = buffer[4:6]
+            if len(buffer) == 6:
 
-            time_value = int.from_bytes(time_buffer, 'litle', signed=False)
-            time_value = int.from_bytes(time_buffer, 'litle', signed=False)
-            if TOD.ValidateValue(time_value) and DATE.ValidateValue(date_value):
-                return [time_value, date_value]
+                time_buffer = buffer[0:4]
+                date_buffer = buffer[4:6]
+
+                time_value = int.from_bytes(time_buffer, 'little', signed=False)
+                date_value = int.from_bytes(date_buffer, 'little', signed=False)
+                
+                return (time_value, date_value)
+               
             else:
-                raise Exception('invalid value')
+                raise ValueError('buffer length mitsmatch with int encoding')
         else:
-            raise Exception('buffer length mitsmatch with int encoding')
+            raise TypeError('buffer must be bytes')
 
     @classmethod
-    def EncodeString(time_value, date_value)
+    def to_string(cls, time_value, date_value):
         """ Encode a date string 
 
         Parameters
@@ -91,19 +113,23 @@ class DT(BaseDatatype):
             String iso format startin with TD# identifier
 
         """
-        format_str = "TD#"
-        
-        
-        if cls.ValidateValue(time_value, date_value):
+        if isinstance(date_value, int) and isinstance(time_value, int):
 
-            time_str = TOD.EncodeString(time_value)
-            date_str = DATE.EncodeString(date_value)
-            return format_str + date_str + '-' + time_str
+                        
+            
+            if cls.validate_range(time_value, date_value):
+
+                time_str = TOD.to_string(time_value)
+                date_str = DATE.to_string(date_value)
+                return "DT#" + date_str[2:] + '-' + time_str[4:]
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise Exception('value is not valid integer')
+            raise TypeError('values must be int')
+
 
     @classmethod
-    def DecodeString(dt_str):
+    def from_string(cls, dt_str):
         """Decode a date and time string
         Parameters
         -----------
@@ -117,17 +143,21 @@ class DT(BaseDatatype):
             value of amount of miliseconds from midnight
 
         """
-        date_str = time_str[3:13]
-        time_str = date_str[14:23]
+        format_date_str = dt_str[3:13]
+        format_time_str = dt_str[14:26]
+        
 
-        if (dt_str[0:3] == "DT#")
+        if (dt_str[0:3] == "DT#"):
 
             try:
-                _date = DATE.EncodeString(date_str)
-                _time = TOD.EncodeString(time_str)        
+                _date = DATE.from_string("D#" + format_date_str)
+                _time = TOD.from_string("TOD#" + format_time_str)        
+                return (_time, _date)
 
-            except e:
-                raise e
+            except TypeError:
+                raise TypeError('DATE or TOD string are not valid type')
+            except ValueError:
+                raise ValueError('values are not valid range')
 
         else:
-            raise ValueError('time string is not valid TOD string')
+            raise TypeError('argument string is not valid DT string')

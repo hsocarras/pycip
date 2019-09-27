@@ -731,11 +731,11 @@ class TestDataTypeDATE(unittest.TestCase):
         print("Testing USINT encode")
 
         #bytes encoded acording to cip 
-        uint_encoded = bytearray(2)
-        uint_encoded[0] = 0xD1
-        uint_encoded[1] = 0x56      #22225 
+        date_encoded = bytearray(2)
+        date_encoded[0] = 0xD1
+        date_encoded[1] = 0x56      #22225 
 
-        self.assertEqual(DataType.DATE.encode(22225), uint_encoded)
+        self.assertEqual(DataType.DATE.encode(22225), date_encoded)
         # check that  fails when the value is not int
         with self.assertRaises(TypeError):
             DataType.DATE.encode(0.1)
@@ -780,11 +780,370 @@ class TestDataTypeDATE(unittest.TestCase):
     def test_to_string(self):
         print("Testing DATE to string")
         self.assertEqual(DataType.DATE.to_string(25), 'D#1972-01-26')
+        with self.assertRaises(TypeError):
+            DataType.DATE.to_string(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DATE.to_string(265693)
 
-    #testing to_string
+    #testing from_string
     def test_from_string(self):
         print("Testing DATE from string")
         self.assertEqual(DataType.DATE.from_string("D#1973-01-25"), 390)
+        with self.assertRaises(TypeError):
+            DataType.DATE.from_string("DT#1973-01-25")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DATE.from_string("D#2973-01-25")
+
+class TestDataTypeTOD(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing TOD Range")                
+        self.assertTrue(DataType.TOD.validate_range(0))
+        self.assertTrue(DataType.TOD.validate_range(12750))
+        self.assertFalse(DataType.TOD.validate_range(87450000))
+        self.assertFalse(DataType.TOD.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing TOD encode")
+
+        #bytes encoded acording to cip 
+        tod_encoded = bytearray(4)
+        tod_encoded[0] = 0x50
+        tod_encoded[1] = 0x76 
+        tod_encoded[2] = 0xF2
+        tod_encoded[3] = 0x00      #15890000
+
+        self.assertEqual(DataType.TOD.encode(15890000), tod_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.TOD.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TOD.encode(-265693)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing TOD decode")
+
+        #bytes encoded acording to cip 
+        tod_encoded = bytearray(4)
+        tod_encoded[0] = 0x50
+        tod_encoded[1] = 0x76 
+        tod_encoded[2] = 0xF2
+        tod_encoded[3] = 0x00      #15890000  
+        tod_encoded = bytes(tod_encoded)
+
+        tod_wrong_encoded = bytearray(9)
+        tod_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.TOD.decode(tod_encoded), 15890000)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.TOD.decode(tod_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TOD.decode(bytes(tod_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing TOD getting id_code")
+        self.assertEqual(DataType.TOD.get_id_code(), 0xCE)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying TOD")
+        self.assertEqual(DataType.identify(0xCE), 'TOD')
+
+    #testing to_string
+    def test_to_string(self):
+        print("Testing TOD to string")
+        self.assertEqual(DataType.TOD.to_string(15890000), 'TOD#04:24:50.000')
+        with self.assertRaises(TypeError):
+            DataType.TOD.to_string(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TOD.to_string(87495000)
+
+    #testing from_string
+    def test_from_string(self):
+        print("Testing TOD from string")
+        self.assertEqual(DataType.TOD.from_string("TOD#04:24:50.025"), 15890025)
+        with self.assertRaises(TypeError):
+            DataType.TOD.from_string("DT#1973-01-25")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TOD.from_string("TOD#24:24:50.025")
+
+class TestDataTypeDT(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing DT Range")                
+        self.assertTrue(DataType.DT.validate_range(0, 2))
+        self.assertTrue(DataType.DT.validate_range(12750, 896))
+        self.assertFalse(DataType.DT.validate_range(87450000, 25))
+        self.assertFalse(DataType.DT.validate_range(12750, 75000))
+
+    #testing encode
+    def test_encode(self):
+        print("Testing TOD encode")
+
+        #bytes encoded acording to cip 
+        tod_encoded = bytearray(4)
+        tod_encoded[0] = 0x50
+        tod_encoded[1] = 0x76 
+        tod_encoded[2] = 0xF2
+        tod_encoded[3] = 0x00      #15890000
+
+        date_encoded = bytearray(2)
+        date_encoded[0] = 0xD1
+        date_encoded[1] = 0x56      #22225 
+
+        self.assertEqual(DataType.DT.encode(15890000, 22225), bytes(tod_encoded + date_encoded))
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.DT.encode(0.1, date_encoded)
+            DataType.DT.encode(tod_encoded, 0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DT.encode(-265693, 25)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing DT decode")
+
+        #bytes encoded acording to cip 
+        tod_encoded = bytearray(4)
+        tod_encoded[0] = 0x50
+        tod_encoded[1] = 0x76 
+        tod_encoded[2] = 0xF2
+        tod_encoded[3] = 0x00      #15890000  
+       
+
+        date_encoded = bytearray(2)
+        date_encoded[0] = 0xD1
+        date_encoded[1] = 0x56      #22225 
+        tod_encoded = bytes(tod_encoded + date_encoded)
+
+        tod_wrong_encoded = bytearray(9)
+        tod_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.DT.decode(tod_encoded), (15890000, 22225))
+
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.DT.decode(tod_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DT.decode(bytes(tod_wrong_encoded))
+        
+
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing DT getting id_code")
+        self.assertEqual(DataType.DT.get_id_code(), 0xCF)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying DT")
+        self.assertEqual(DataType.identify(0xCF), 'DT')
+
+    #testing to_string
+    def test_to_string(self):
+        print("Testing DT to string")
+        self.assertEqual(DataType.DT.to_string(15890000, 3), 'DT#1972-01-04-04:24:50.000')
+        with self.assertRaises(TypeError):
+            DataType.DT.to_string(0.1, 54)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DT.to_string(87495000, 68500)
+
+    #testing from_string
+    def test_from_string(self):
+        print("Testing DT from string")
+        self.assertEqual(DataType.DT.from_string("DT#1972-01-05-04:24:51.025"), (15891025, 4))
+        with self.assertRaises(TypeError):
+            DataType.DT.from_string("DaT#1972-1-5-04:24:51.025")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DT.from_string("DT#1972-1-5-24:24:51.025")
+
+class TestDataTypeSTRING(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing String Range")                
+        self.assertTrue(DataType.STRING.validate_range('I love python and nodejs'))
+        
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing STRING encode")
+
+        #bytes encoded acording to cip 
+        str_encoded = bytearray(15)
+        str_encoded[0] = 13
+        str_encoded[1] = 0x00
+        str_encoded[2] = 0x49
+        str_encoded[3] = 0x20
+        str_encoded[4] = 0x6C
+        str_encoded[5] = 0x6F
+        str_encoded[6] = 0x76
+        str_encoded[7] = 0x65
+        str_encoded[8] = 0x20
+        str_encoded[9] = 0x70
+        str_encoded[10] = 0x79
+        str_encoded[11] = 0x74
+        str_encoded[12] = 0x68
+        str_encoded[13] = 0x6F
+        str_encoded[14] = 0x6E
+        
+
+        self.assertEqual(DataType.STRING.encode('I love python'), str_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.STRING.encode(0.1)
+        
+
+    #testing decode
+    def test_decode(self):
+        print("Testing STRING decode")
+
+       #bytes encoded acording to cip 
+        str_encoded = bytearray(15)
+        str_encoded[0] = 13
+        str_encoded[1] = 0x00
+        str_encoded[2] = 0x49
+        str_encoded[3] = 0x20
+        str_encoded[4] = 0x6C
+        str_encoded[5] = 0x6F
+        str_encoded[6] = 0x76
+        str_encoded[7] = 0x65
+        str_encoded[8] = 0x20
+        str_encoded[9] = 0x70
+        str_encoded[10] = 0x79
+        str_encoded[11] = 0x74
+        str_encoded[12] = 0x68
+        str_encoded[13] = 0x6F
+        str_encoded[14] = 0x6E      
+        str_encoded = bytes(str_encoded)
+
+        usint_wrong_encoded = bytearray(2)
+        usint_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.STRING.decode(str_encoded), 'I love python')
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.STRING.decode(usint_wrong_encoded)
+        
+        
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing STRING getting id_code")
+        self.assertEqual(DataType.STRING.get_id_code(), 0xD0)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying STRING")
+        self.assertEqual(DataType.identify(0xD0), 'STRING')
+
+class TestDataTypeBYTE(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing BYTE Range")                
+        self.assertTrue(DataType.BYTE.validate_range(0))
+        self.assertTrue(DataType.BYTE.validate_range(127))
+        self.assertFalse(DataType.BYTE.validate_range(-6))
+        self.assertFalse(DataType.BYTE.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing BYTE encode")
+
+        #bytes encoded acording to cip 
+        usint_encoded = bytearray(1)
+        usint_encoded[0] = 45
+        
+
+        self.assertEqual(DataType.BYTE.encode(45), usint_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.BYTE.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.BYTE.encode(263)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing BYTE decode")
+
+        #bytes encoded acording to cip 
+        usint_encoded = bytearray(1)
+        usint_encoded[0] = 45        
+        usint_encoded = bytes(usint_encoded)
+
+        usint_wrong_encoded = bytearray(2)
+        usint_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.BYTE.decode(usint_encoded), 45)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.BYTE.decode(usint_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.BYTE.decode(bytes(usint_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing BYTE getting id_code")
+        self.assertEqual(DataType.BYTE.get_id_code(), 0xD1)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying BYTE")
+        self.assertEqual(DataType.identify(0xD1), 'BYTE')
+
+    #testing set flag
+    def test_set_flag(self):
+        print("Testing set flag in BYTE")
+        self.assertEqual(DataType.BYTE.set_flag(0b01011001, 2, True), 0b01011101)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.BYTE.set_flag(0.1 , 2, False)
+            DataType.BYTE.set_flag(0x14 , 0.2, False)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.BYTE.set_flag(263, 5, False)
+            DataType.BYTE.set_flag(0x54, 15, False)
+
+    #testing get flag
+    def test_get_flag(self):
+        print("Testing get flag in BYTE")
+        self.assertEqual(DataType.BYTE.get_flag(0b01011001, 4), True)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.BYTE.get_flag(0.1 , 2)
+            DataType.BYTE.get_flag(0x14 , 0.2)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.BYTE.get_flag(263, 5)
+            DataType.BYTE.get_flag(0x54, 15)
 
 
 if __name__ == '__main__':

@@ -101,9 +101,13 @@ class BaseDatatype:
             0xCB : "LREAL",
             0xCC : "STIME",
             0xCD : "DATE",
-            0xCE : "",
-            0xCF : "",
-            0xD0 : ""
+            0xCE : "TOD",
+            0xCF : "DT",
+            0xD0 : "STRING",
+            0xD1 : "BYTE",
+            0xD2 : "WORD",
+            0xD3 : "DWORD",
+            0xD4 : "LWORD"
         }
 
         return repo.get(key)

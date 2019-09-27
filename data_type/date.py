@@ -14,13 +14,13 @@ class DATE(BaseDatatype):
 
     classmethod validate_range
 
-    classmethod GetIDCode
+    classmethod get_id_code
 
-    classmethod ToString
+    classmethod to_string
 
-    classmethod FromString
+    classmethod from_string
 
-    staticmethod Identify
+    staticmethod identify
 
     """ 
 
@@ -95,12 +95,12 @@ class DATE(BaseDatatype):
 
         """
         if isinstance(value, int):
-            format_str = "D#"
+            
             init_date = date(1972, 1, 1)
             if cls.validate_range(value):
                 d = timedelta(days = value)
                 _date = init_date + d
-                return format_str + _date.isoformat()
+                return "D#" + _date.isoformat()
             else:
                 raise ValueError('value is not in valid cip range')
         else:
@@ -121,13 +121,18 @@ class DATE(BaseDatatype):
             String iso format startin with D# identifier
 
         """
-        format_str = "D#"
-        init_date = date(1972, 1, 1)
-        _date = date.fromisoformat(date_str[2:])
-        diff = _date - init_date
-        value = int(diff.total_seconds()/86400)
+        format_str = date_str[2:] #String whithout prefixes
 
-        if cls.validate_range(value):            
-            return value
+        if date_str[0:2] == "D#":
+
+            init_date = date(1972, 1, 1)
+            _date = date.fromisoformat(format_str)
+            diff = _date - init_date
+            value = int(diff.total_seconds()/86400)
+
+            if cls.validate_range(value):            
+                return value
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise ValueError('value is not in valid cip range')
+            raise TypeError('argument string is not valid DATE type string')

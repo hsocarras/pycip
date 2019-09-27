@@ -5,15 +5,30 @@ from datetime import time
 
 class TOD(BaseDatatype):
     """Class to implement Time of Date datatype of CIP especification.
+     Methods
+    -------
+    class encode
+
+    class decode
+
+    classmethod validate_range
+
+    classmethod get_id_code
+
+    classmethod to_string
+
+    classmethod from_string
+
+    staticmethod identify
 
     """ 
 
-    id_code = 0xCE
-    min_value = 0
-    max_value = 86400000
+    _id_code = 0xCE
+    _min_value = 0
+    _max_value = 86400000
 
     @classmethod
-    def Encode(cls, value):
+    def encode(cls, value):
         """ Encode a value in a byte array
 
         Parameters
@@ -26,16 +41,19 @@ class TOD(BaseDatatype):
         Byte Array --  Encode value in a byte array to send trough a network
 
         """
-        buffer = None
-        if cls.ValidateValue(value):
-            buffer = value.to_byte(4, 'litle')
-            return buffer
+        if isinstance(value, int):
+            buffer = None
+            if cls.validate_range(value):
+                buffer = value.to_bytes(4, 'little', signed = False)
+                return buffer
+            else:
+                raise ValueError('value is not in valid cip range')
         else:
-            raise Exception('value is not in valid range')
+            raise TypeError('value must be int')
         
 
     @classmethod
-    def Decode(cls, buffer):
+    def decode(cls, buffer):
         """ Decode a value from a byte array
 
         Parameters
@@ -49,16 +67,19 @@ class TOD(BaseDatatype):
             Decode value from a byte array received trough a network
 
         """
-        value = None
+        if isinstance(buffer, bytes):
+            value = None
 
-        if len(buffer) == 4:
-            value = int.from_bytes(buffer, 'litle', signed=False)
-            return value
+            if len(buffer) == 4:
+                value = int.from_bytes(buffer, 'little', signed=False)
+                return value
+            else:
+                raise ValueError('buffer length mitsmatch with int encoding')
         else:
-            raise Exception('buffer length mitsmatch with int encoding')
+            raise TypeError('buffer must be bytes')
 
     @classmethod
-    def EncodeString(value)
+    def to_string(cls, value):
         """ Encode a date string from TOD#00:00:00.000 to TOD#23:59:59.999
 
         Parameters
@@ -72,24 +93,25 @@ class TOD(BaseDatatype):
             String iso format startin with TOD# identifier
 
         """
-        format_str = "TOD#"
-        
-        
-        if cls.ValidateValue(value):
-
-            _hours = int(value/3600)
-            _rest = value % 3600
-            _min = int(_rest/60)
-            _rest = _rest % 60
-            _seg = int(_rest/60)
-            _miliseg = _rest % 60
-            _time = time(_hours, _min, _seg, _miliseg*1000)
-            return format_str + time.toisoformat()
+        if isinstance(value, int):
+            
+            
+            if cls.validate_range(value):               
+                _hours = int(value/3600000)                
+                _rest = value % 3600000
+                _min = int(_rest/60000)
+                _rest = _rest % 60000
+                _seg = int(_rest/1000)
+                _miliseg = _rest % 1000
+                _time = time(_hours, _min, _seg, _miliseg*1000)
+                return "TOD#" + _time.isoformat('milliseconds')
+            else:
+                raise ValueError('value is not valid integer')
         else:
-            raise Exception('value is not valid integer')
+            raise TypeError('value must be int')
 
     @classmethod
-    def DecodeString(time_str):
+    def from_string(cls, time_str):
         """Decode a time string from TOD#00:00:00.000 to TOD#23:59:59.999
         Parameters
         -----------
@@ -104,15 +126,16 @@ class TOD(BaseDatatype):
 
         """
         format_str = time_str[4:]
+        
+        if time_str[0:4] == "TOD#":
 
-        if (time_str[0:4] == "TOD#")
+            _time = time.fromisoformat(format_str)  
+                  
+            value = _time.hour*3600000 + _time.minute*60000 +  _time.second * 1000 + int(_time.microsecond/1000)
 
-        _time = time.fromisoformat(format_str)        
-        value = _time.hour*3600 + _time.minute*60 + _time.second * 60 + int(_time.microsecond/1000)
-
-            if cls.ValidateValue(value):                
+            if cls.validate_range(value):                
                 return value
             else:
                 raise ValueError('value is not valid integer')
         else:
-            raise ValueError('time string is not valid TOD string')
+            raise TypeError('argument string is not valid TOD type string')

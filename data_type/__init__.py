@@ -12,6 +12,11 @@ from .ulint import ULINT
 from .real import REAL
 from .lreal import LREAL
 from .date import DATE
+from .tod import TOD
+from .dt import DT
+from .string import STRING
+from .byte import BYTE
+from .word import WORD
 
 class DataType:
     BOOL = BOOL
@@ -27,5 +32,10 @@ class DataType:
     LREAL = LREAL 
 
     DATE = DATE 
+    TOD = TOD
+    DT = DT 
+    STRING = STRING
+    BYTE = BYTE 
+    WORD = WORD # not ready yet
 
     identify = BaseDatatype.identify
