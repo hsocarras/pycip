@@ -19,6 +19,9 @@ from .byte import BYTE
 from .word import WORD
 from .dword import DWORD
 from .lword import LWORD
+from .ftime import FTIME
+from .ltime import LTIME
+from .itime import ITIME
 
 class DataType:
     BOOL = BOOL
@@ -40,6 +43,10 @@ class DataType:
     BYTE = BYTE 
     WORD = WORD 
     DWORD = DWORD
-    LWORD = LWORD # not ready yet
+    LWORD = LWORD 
+    
+    FTIME = FTIME
+    LTIME = LTIME 
+    ITIME = ITIME # not ready yet
 
     identify = BaseDatatype.identify

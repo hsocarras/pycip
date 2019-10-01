@@ -1433,6 +1433,266 @@ class TestDataTypeLDWORD(unittest.TestCase):
             DataType.LWORD.get_flag(0xD012C456FE1556AD01, 5)
             DataType.LWORD.get_flag(0x5425, 305)
 
+class TestDataTypeFTIME(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing FTIME Range")                
+        self.assertTrue(DataType.FTIME.validate_range(-725869))
+        self.assertTrue(DataType.FTIME.validate_range(1275058))
+        self.assertFalse(DataType.FTIME.validate_range(0x1010257801))
+        self.assertFalse(DataType.FTIME.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing FTIME encode")
+
+        #bytes encoded acording to cip 
+        ftime_encoded = bytearray(4)
+        ftime_encoded[0] = 0xF9
+        ftime_encoded[1] = 0x55 
+        ftime_encoded[2] = 0x7C
+        ftime_encoded[3] = 0xFF #-8628743
+
+        self.assertEqual(DataType.FTIME.encode(-8628743), ftime_encoded)
+        # check that  fails when the value is not a bulean or int
+        with self.assertRaises(TypeError):
+            DataType.FTIME.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.FTIME.encode(323036509876554)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing INT decode")
+
+        #bytes encoded acording to cip 
+        ftime_encoded = bytearray(4)
+        ftime_encoded[0] = 0xF9
+        ftime_encoded[1] = 0x55 
+        ftime_encoded[2] = 0x7C
+        ftime_encoded[3] = 0xFF #-8628743
+        ftime_encoded = bytes(ftime_encoded)
+
+        ftime_wrong_encoded = bytearray(5)
+        ftime_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.FTIME.decode(ftime_encoded), -8628743)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.FTIME.decode(ftime_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.FTIME.decode(bytes(ftime_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing FTIME getting id_code")
+        self.assertEqual(DataType.FTIME.get_id_code(), 0xD6)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying Ftime")
+        self.assertEqual(DataType.identify(0xD6), 'FTIME')
+
+    #testing to_string
+    def test_to_string(self):
+        print("Testing FTIME to string")
+        self.assertEqual(DataType.FTIME.to_string(158900000), 'T#02m38.900000s')
+        with self.assertRaises(TypeError):
+            DataType.FTIME.to_string(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.FTIME.to_string(323036509876554)
+
+    #testing from_string
+    def test_from_string(self):
+        print("Testing FTIME from string")
+        self.assertEqual(DataType.FTIME.from_string("T#-21m24.529025s"), -1284529025)
+        with self.assertRaises(TypeError):
+            DataType.FTIME.from_string("DT#1973-01-25")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.FTIME.from_string("T#54m45.078025s")
+
+class TestDataTypeLTIME(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing LTIME Range")                
+        self.assertTrue(DataType.LTIME.validate_range(-327505684500))
+        self.assertTrue(DataType.LTIME.validate_range(305205963269))
+        self.assertFalse(DataType.LTIME.validate_range(0xADEDEFC45689245631))
+        self.assertFalse(DataType.LTIME.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing LTIME encode")
+
+        #bytes encoded acording to cip 
+        ltime_encoded = bytearray(8)
+        ltime_encoded[0] = 0x45
+        ltime_encoded[1] = 0xA6 
+        ltime_encoded[2] = 0xE9
+        ltime_encoded[3] = 0xD5
+        ltime_encoded[4] = 0xC6
+        ltime_encoded[5] = 0xFA 
+        ltime_encoded[6] = 0x00
+        ltime_encoded[7] = 0x00 #275731899328069
+
+        self.assertEqual(DataType.LTIME.encode(275731899328069), ltime_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.LTIME.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LTIME.encode(32303650987655489658745213658)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing LTIME decode")
+
+        #bytes encoded acording to cip 
+        ltime_encoded = bytearray(8)
+        ltime_encoded[0] = 0x45
+        ltime_encoded[1] = 0xA6 
+        ltime_encoded[2] = 0xE9
+        ltime_encoded[3] = 0xD5
+        ltime_encoded[4] = 0xC6
+        ltime_encoded[5] = 0xFA 
+        ltime_encoded[6] = 0x00
+        ltime_encoded[7] = 0x00 #275731899328069
+        ltime_encoded = bytes(ltime_encoded)
+
+        ltime_wrong_encoded = bytearray(9)
+        ltime_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.LTIME.decode(ltime_encoded), 275731899328069)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.LTIME.decode(ltime_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LTIME.decode(bytes(ltime_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing LTIME getting id_code")
+        self.assertEqual(DataType.LTIME.get_id_code(), 0xD7)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying LTIME")
+        self.assertEqual(DataType.identify(0xD7), 'LTIME')
+
+    #testing to_string
+    def test_to_string(self):
+        print("Testing LTIME to string")
+        self.assertEqual(DataType.LTIME.to_string(915898965232584), 'T#10600d16h22m45.232584s')
+        with self.assertRaises(TypeError):
+            DataType.LTIME.to_string(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LTIME.to_string(0x123456789887654321)
+
+    #testing from_string
+    def test_from_string(self):
+        print("Testing LTIME from string")
+        self.assertEqual(DataType.LTIME.from_string("T#-115265d06h34m42.325810s"), -9958919682325810)
+        with self.assertRaises(TypeError):
+            DataType.LTIME.from_string("DT#1973-01-25")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LTIME.from_string("T#106751991d06h34m42.325810s")
+
+class TestDataTypeITIME(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing ITIME Range")                
+        self.assertTrue(DataType.ITIME.validate_range(-32750))
+        self.assertTrue(DataType.ITIME.validate_range(30520))
+        self.assertFalse(DataType.ITIME.validate_range(-652369))
+        self.assertFalse(DataType.ITIME.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing ITIME encode")
+
+        #bytes encoded acording to cip 
+        itime_encoded = bytearray(2)
+        itime_encoded[0] = 0xE7
+        itime_encoded[1] = 0x9C #-25369
+
+        self.assertEqual(DataType.ITIME.encode(-25369), itime_encoded)
+        # check that  fails when the value is not a bulean or int
+        with self.assertRaises(TypeError):
+            DataType.ITIME.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.ITIME.encode(3230365)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing ITIME decode")
+
+        #bytes encoded acording to cip 
+        itime_encoded = bytearray(2)
+        itime_encoded[0] = 0xE7
+        itime_encoded[1] = 0x9C #-25369
+        itime_encoded = bytes(itime_encoded)
+
+        itime_wrong_encoded = bytearray(3)
+        itime_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.ITIME.decode(itime_encoded), -25369)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.ITIME.decode(itime_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.ITIME.decode(bytes(itime_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing ITIME getting id_code")
+        self.assertEqual(DataType.ITIME.get_id_code(), 0xD8)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying ITIME")
+        self.assertEqual(DataType.identify(0xD8), 'ITIME')
+
+    #testing to_string
+    def test_to_string(self):
+        print("Testing ITIME to string")
+        self.assertEqual(DataType.ITIME.to_string(2584), 'T#02s584ms')
+        with self.assertRaises(TypeError):
+            DataType.ITIME.to_string(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.ITIME.to_string(45216)
+
+    #testing from_string
+    def test_from_string(self):
+        print("Testing ITIME from string")
+        self.assertEqual(DataType.ITIME.from_string("T#-22s810ms"), -22810)
+        with self.assertRaises(TypeError):
+            DataType.ITIME.from_string("DT#1973-01-25")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.ITIME.from_string("T#42s155ms")
+
+
 if __name__ == '__main__':
     unittest.main() 
     

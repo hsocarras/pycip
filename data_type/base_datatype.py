@@ -107,7 +107,14 @@ class BaseDatatype:
             0xD1 : "BYTE",
             0xD2 : "WORD",
             0xD3 : "DWORD",
-            0xD4 : "LWORD"
+            0xD4 : "LWORD",
+            0xD6 : "FTIME",
+            0xD7 : "LTIME",
+            0xD8 : "ITIME",
+            0xDA : "SHORT_STRING",
+            0xDB : "TIME",
+            0xDC : "EPATH",
+            0xDD : "ENGUNIT"
         }
 
         return repo.get(key)
