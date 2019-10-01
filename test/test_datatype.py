@@ -1145,6 +1145,293 @@ class TestDataTypeBYTE(unittest.TestCase):
             DataType.BYTE.get_flag(263, 5)
             DataType.BYTE.get_flag(0x54, 15)
 
+class TestDataTypeWORD(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing WORD Range")                
+        self.assertTrue(DataType.WORD.validate_range(0))
+        self.assertTrue(DataType.WORD.validate_range(12700))
+        self.assertFalse(DataType.WORD.validate_range(-6))
+        self.assertFalse(DataType.WORD.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing WORD encode")
+
+        #bytes encoded acording to cip       
+        word_encoded = bytearray(2)
+        word_encoded[0] = 0xD1
+        word_encoded[1] = 0x56      #22225 
+        
+
+        self.assertEqual(DataType.WORD.encode(22225), word_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.WORD.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.WORD.encode(68956)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing WORD decode")
+
+        #bytes encoded acording to cip 
+        word_encoded = bytearray(2)
+        word_encoded[0] = 0xD1
+        word_encoded[1] = 0x56      #22225     
+        word_encoded = bytes(word_encoded)
+
+        word_wrong_encoded = bytearray(9)
+        word_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.WORD.decode(word_encoded), 22225)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.WORD.decode(word_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.WORD.decode(bytes(word_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing WORD getting id_code")
+        self.assertEqual(DataType.WORD.get_id_code(), 0xD2)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying WORD")
+        self.assertEqual(DataType.identify(0xD2), 'WORD')
+
+    #testing set flag
+    def test_set_flag(self):
+        print("Testing set flag in WORD")
+        self.assertEqual(DataType.WORD.set_flag(0b0101100111001101, 12, False), 0b0100100111001101)
+        self.assertEqual(DataType.WORD.set_flag(0b0101100111001101, 1, True), 0b0101100111001111)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.WORD.set_flag(0.1 , 2, False)
+            DataType.WORD.set_flag(0x14 , 0.2, False)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.WORD.set_flag(96263, 5, False)
+            DataType.WORD.set_flag(0x54, 18, False)
+
+    #testing get flag
+    def test_get_flag(self):
+        print("Testing get flag in WORD")
+        self.assertEqual(DataType.WORD.get_flag(0b0101100111101100, 14), True)
+        self.assertEqual(DataType.WORD.get_flag(0b0101100111101100, 4), False)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.WORD.get_flag(0.1 , 2)
+            DataType.WORD.get_flag(0x14 , 0.2)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.WORD.get_flag(75263, 5)
+            DataType.WORD.get_flag(0x5425, 17)
+
+class TestDataTypeDWORD(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing WORD Range")                
+        self.assertTrue(DataType.DWORD.validate_range(0))
+        self.assertTrue(DataType.DWORD.validate_range(0xACDE1234))
+        self.assertFalse(DataType.DWORD.validate_range(-6))
+        self.assertFalse(DataType.DWORD.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing DWORD encode")
+
+        #bytes encoded acording to cip 
+        dword_encoded = bytearray(4)
+        dword_encoded[0] = 0xD1
+        dword_encoded[1] = 0x56      
+        dword_encoded[2] = 0xF2
+        dword_encoded[3] = 0xE1      #3790755537 
+
+        self.assertEqual(DataType.DWORD.encode(3790755537), dword_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.DWORD.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DWORD.encode(1270256556350)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing DWORD decode")
+
+        #bytes encoded acording to cip 
+        dword_encoded = bytearray(4)
+        dword_encoded[0] = 0xD1
+        dword_encoded[1] = 0x56      
+        dword_encoded[2] = 0xF2
+        dword_encoded[3] = 0xE1      #3790755537        
+        dword_encoded = bytes(dword_encoded)
+
+        dword_wrong_encoded = bytearray(5)
+        dword_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.DWORD.decode(dword_encoded), 3790755537)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.DWORD.decode(dword_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DWORD.decode(bytes(dword_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing DWORD getting id_code")
+        self.assertEqual(DataType.DWORD.get_id_code(), 0xD3)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying DWORD")
+        self.assertEqual(DataType.identify(0xD3), 'DWORD')
+
+    #testing set flag
+    def test_set_flag(self):
+        print("Testing set flag in DWORD")
+        self.assertEqual(DataType.DWORD.set_flag(0xD012C456, 23,True), 0xD092C456)
+        self.assertEqual(DataType.DWORD.set_flag(0xD012C456, 11, True), 0xD012CC56)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.DWORD.set_flag(0.1 , 2, False)
+            DataType.DWORD.set_flag(0x14 , 0.2, False)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DWORD.set_flag(0xDC12457854, 5, False)
+            DataType.DWORD.set_flag(0x54, 33, False)
+
+    #testing get flag
+    def test_get_flag(self):
+        print("Testing get flag in WORD")
+        self.assertEqual(DataType.DWORD.get_flag(0xDC451278, 22), True)
+        self.assertEqual(DataType.DWORD.get_flag(0b0101100111101100, 8), True)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.DWORD.get_flag(0.1 , 2)
+            DataType.DWORD.get_flag(0x14 , 0.2)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DWORD.get_flag(0xDACDEF121, 5)
+            DataType.DWORD.get_flag(0x5425, 35)
+
+class TestDataTypeLDWORD(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing LWORD Range")                
+        self.assertTrue(DataType.LWORD.validate_range(0))
+        self.assertTrue(DataType.LWORD.validate_range(0xACDE12345678))
+        self.assertFalse(DataType.LWORD.validate_range(-6))
+        self.assertFalse(DataType.LWORD.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing LWORD encode")
+
+        #bytes encoded acording to cip 
+        lword_encoded = bytearray(8)
+        lword_encoded[0] = 0x78
+        lword_encoded[1] = 0x96      
+        lword_encoded[2] = 0x85
+        lword_encoded[3] = 0xF1      
+        lword_encoded[4] = 0xE8
+        lword_encoded[5] = 0xA3      
+        lword_encoded[6] = 0xC5
+        lword_encoded[7] = 0x00      #55630791291803256
+
+        self.assertEqual(DataType.LWORD.encode(55630791291803256), lword_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.DWORD.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.DWORD.encode(556307912918032565698563245)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing ULINT decode")
+
+        #bytes encoded acording to cip 
+        lword_encoded = bytearray(8)
+        lword_encoded[0] = 0x78
+        lword_encoded[1] = 0x96      
+        lword_encoded[2] = 0x85
+        lword_encoded[3] = 0xF1      
+        lword_encoded[4] = 0xE8
+        lword_encoded[5] = 0xA3      
+        lword_encoded[6] = 0xC5
+        lword_encoded[7] = 0x00      #55630791291803256       
+        lword_encoded = bytes(lword_encoded)
+
+        lword_wrong_encoded = bytearray(9)
+        lword_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.LWORD.decode(lword_encoded), 55630791291803256)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.LWORD.decode(lword_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LWORD.decode(bytes(lword_wrong_encoded))
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing LWORD getting id_code")
+        self.assertEqual(DataType.LWORD.get_id_code(), 0xD4)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying LWORD")
+        self.assertEqual(DataType.identify(0xD4), 'LWORD')
+
+    #testing set flag
+    def test_set_flag(self):
+        print("Testing set flag in LWORD")
+        self.assertEqual(DataType.LWORD.set_flag(0x1012C456FE1556AD, 53, True), 0x1032C456FE1556AD)
+        self.assertEqual(DataType.LWORD.set_flag(0x1012C456FE1556AD, 41, True), 0x1012C656FE1556AD)
+        self.assertEqual(DataType.LWORD.set_flag(0x1012C456FE1556AD, 29,False), 0x1012C456DE1556AD)
+        self.assertEqual(DataType.LWORD.set_flag(0x1012C456FE1556AD, 7, False), 0x1012C456FE15562D)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.LWORD.set_flag(0.1 , 2, False)
+            DataType.LWORD.set_flag(0x14 , 0.2, False)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LWORD.set_flag(0xD012C456FE1556AD01, 5, False)
+            DataType.LWORD.set_flag(0x54, 65, False)
+
+    #testing get flag
+    def test_get_flag(self):
+        print("Testing get flag in WORD")
+        self.assertEqual(DataType.LWORD.get_flag(0xD012C456FE1556AD, 55), False)
+        self.assertEqual(DataType.LWORD.get_flag(0xD012C456FE1556AD, 41), False)
+        self.assertEqual(DataType.LWORD.get_flag(0xD012C456FE1556AD, 23), False)
+        self.assertEqual(DataType.LWORD.get_flag(0xD012C456FE1556AD, 10), True)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.LWORD.get_flag(0.1 , 2)
+            DataType.LWORD.get_flag(0x14 , 0.2)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.LWORD.get_flag(0xD012C456FE1556AD01, 5)
+            DataType.LWORD.get_flag(0x5425, 305)
 
 if __name__ == '__main__':
     unittest.main() 

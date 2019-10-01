@@ -16,6 +16,10 @@ class BYTE(BaseDatatype):
 
     staticmethod Identify
 
+    classmethod set_flag
+
+    classmethod get_flag
+
     """ 
 
     _id_code = 0xD1

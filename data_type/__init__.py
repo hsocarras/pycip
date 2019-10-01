@@ -17,6 +17,8 @@ from .dt import DT
 from .string import STRING
 from .byte import BYTE
 from .word import WORD
+from .dword import DWORD
+from .lword import LWORD
 
 class DataType:
     BOOL = BOOL
@@ -36,6 +38,8 @@ class DataType:
     DT = DT 
     STRING = STRING
     BYTE = BYTE 
-    WORD = WORD # not ready yet
+    WORD = WORD 
+    DWORD = DWORD
+    LWORD = LWORD # not ready yet
 
     identify = BaseDatatype.identify
