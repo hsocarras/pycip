@@ -1,8 +1,8 @@
 from .base_datatype import BaseDatatype
 
 
-class STRING(BaseDatatype):
-    """Class to implement STRING datatype of CIP especification.
+class ENGUNIT(BaseDatatype):
+    """Class to implement ENGUNIT datatype of CIP especification.
 
     Methods
     -------
@@ -12,21 +12,15 @@ class STRING(BaseDatatype):
 
     classmethod validate_range
 
-    classmethod GetIDCode
+    classmethod get_id_code
 
-    staticmethod Identify
+    staticmethod identify
 
     """ 
 
-    _id_code = 0xD0
-
-    @classmethod
-    def validate_range(cls, value):
-        if len(value) <= 0xFFFF:
-            return True
-        else:
-            return False
-    
+    _id_code = 0xDD
+    _min_value = 0x00
+    _max_value = 0xFFFF
 
     @classmethod
     def encode(cls, value):
@@ -42,24 +36,21 @@ class STRING(BaseDatatype):
         Byte Array --  encoded value in a byte array to send trough a network
 
         """
-        if isinstance(value, str):
+        if isinstance(value, int):
             buffer = None
-            char_count = len(value)
-            
             if cls.validate_range(value):
-                buffer = char_count.to_bytes(2, 'little', signed = False) + bytes(value, 'ascii')
+                buffer = value.to_bytes(2, 'little')
                 return buffer
             else:
-                raise ValueError('the string is to long')
+                raise ValueError('value is not in valid cip range')
         else:
-            raise TypeError('value must be str')
+            raise TypeError('value must be int')
 
         
 
     @classmethod
     def decode(cls, buffer):
         """ decode a value from a byte array
-
         Parameters
         -----------
         buffer: bytes
@@ -72,10 +63,10 @@ class STRING(BaseDatatype):
 
         """
         if isinstance(buffer, bytes):
-            char_count = int.from_bytes(buffer[0:2], 'little', signed=False)
-            
-            if len(buffer[2:]) == char_count:
-                value = buffer[2:].decode('ascii')
+            value = None
+
+            if len(buffer) == 2:
+                value = int.from_bytes(buffer, 'little', signed=False)
                 return value
             else:
                 raise ValueError('buffer length mitsmatch with USINT encoding')

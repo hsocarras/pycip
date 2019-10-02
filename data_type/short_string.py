@@ -1,8 +1,8 @@
 from .base_datatype import BaseDatatype
 
 
-class STRING(BaseDatatype):
-    """Class to implement STRING datatype of CIP especification.
+class SHORTSTRING(BaseDatatype):
+    """Class to implement SHORT_STRING datatype of CIP especification.
 
     Methods
     -------
@@ -18,11 +18,11 @@ class STRING(BaseDatatype):
 
     """ 
 
-    _id_code = 0xD0
+    _id_code = 0xDA
 
     @classmethod
     def validate_range(cls, value):
-        if len(value) <= 0xFFFF:
+        if len(value) <= 0xFF:
             return True
         else:
             return False
@@ -47,7 +47,7 @@ class STRING(BaseDatatype):
             char_count = len(value)
             
             if cls.validate_range(value):
-                buffer = char_count.to_bytes(2, 'little', signed = False) + bytes(value, 'ascii')
+                buffer = char_count.to_bytes(1, 'little', signed = False) + bytes(value, 'ascii')
                 return buffer
             else:
                 raise ValueError('the string is to long')
@@ -72,10 +72,10 @@ class STRING(BaseDatatype):
 
         """
         if isinstance(buffer, bytes):
-            char_count = int.from_bytes(buffer[0:2], 'little', signed=False)
+            char_count = buffer[0]
             
-            if len(buffer[2:]) == char_count:
-                value = buffer[2:].decode('ascii')
+            if len(buffer[1:]) == char_count:
+                value = buffer[1:].decode('ascii')
                 return value
             else:
                 raise ValueError('buffer length mitsmatch with USINT encoding')

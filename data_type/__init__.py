@@ -22,6 +22,8 @@ from .lword import LWORD
 from .ftime import FTIME
 from .ltime import LTIME
 from .itime import ITIME
+from .short_string import SHORTSTRING
+from .time import TIME
 
 class DataType:
     BOOL = BOOL
@@ -47,6 +49,8 @@ class DataType:
     
     FTIME = FTIME
     LTIME = LTIME 
-    ITIME = ITIME # not ready yet
+    ITIME = ITIME
+    SHORTSTRING = SHORTSTRING
+    TIME = TIME # not ready yet
 
     identify = BaseDatatype.identify

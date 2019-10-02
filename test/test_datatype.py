@@ -1692,6 +1692,170 @@ class TestDataTypeITIME(unittest.TestCase):
         with self.assertRaises(ValueError):
             DataType.ITIME.from_string("T#42s155ms")
 
+class TestDataTypeSHORTSTRING(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing ShortString Range")                
+        self.assertTrue(DataType.SHORTSTRING.validate_range('I love python and nodejs'))
+        
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing SHORTSTRING encode")
+
+        #bytes encoded acording to cip 
+        str_encoded = bytearray(14)
+        str_encoded[0] = 13        
+        str_encoded[1] = 0x49
+        str_encoded[2] = 0x20
+        str_encoded[3] = 0x6C
+        str_encoded[4] = 0x6F
+        str_encoded[5] = 0x76
+        str_encoded[6] = 0x65
+        str_encoded[7] = 0x20
+        str_encoded[8] = 0x70
+        str_encoded[9] = 0x79
+        str_encoded[10] = 0x74
+        str_encoded[11] = 0x68
+        str_encoded[12] = 0x6F
+        str_encoded[13] = 0x6E
+        
+
+        self.assertEqual(DataType.SHORTSTRING.encode('I love python'), str_encoded)
+        # check that  fails when the value is not int
+        with self.assertRaises(TypeError):
+            DataType.SHORTSTRING.encode(0.1)
+        
+
+    #testing decode
+    def test_decode(self):
+        print("Testing STRING decode")
+
+       #bytes encoded acording to cip 
+        str_encoded = bytearray(14)
+        str_encoded[0] = 13        
+        str_encoded[1] = 0x49
+        str_encoded[2] = 0x20
+        str_encoded[3] = 0x6C
+        str_encoded[4] = 0x6F
+        str_encoded[5] = 0x76
+        str_encoded[6] = 0x65
+        str_encoded[7] = 0x20
+        str_encoded[8] = 0x70
+        str_encoded[9] = 0x79
+        str_encoded[10] = 0x74
+        str_encoded[11] = 0x68
+        str_encoded[12] = 0x6F
+        str_encoded[13] = 0x6E      
+        str_encoded = bytes(str_encoded)
+
+        usint_wrong_encoded = bytearray(2)
+        usint_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.SHORTSTRING.decode(str_encoded), 'I love python')
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.SHORTSTRING.decode(usint_wrong_encoded)
+        
+        
+      
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing SHORTSTRING getting id_code")
+        self.assertEqual(DataType.SHORTSTRING.get_id_code(), 0xDA)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying SHORTSTRING")
+        self.assertEqual(DataType.identify(0xDA), 'SHORTSTRING')
+
+class TestDataTypeTIME(unittest.TestCase):
+
+
+    #testing Range
+    def test_Range(self):
+        print("Testing TIME Range")                
+        self.assertTrue(DataType.TIME.validate_range(-32750857))
+        self.assertTrue(DataType.TIME.validate_range(30520965))
+        self.assertFalse(DataType.TIME.validate_range(-65236998563245))
+        self.assertFalse(DataType.TIME.validate_range(0.1))
+    
+    #testing encode
+    def test_encode(self):
+        print("Testing TIME encode")
+
+        #bytes encoded acording to cip 
+        time_encoded = bytearray(4)
+        time_encoded[0] = 0xF9
+        time_encoded[1] = 0x55 
+        time_encoded[2] = 0x7C
+        time_encoded[3] = 0xFF #-8628743
+
+        self.assertEqual(DataType.TIME.encode(-8628743), time_encoded)
+        # check that  fails when the value is not a bulean or int
+        with self.assertRaises(TypeError):
+            DataType.TIME.encode(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TIME.encode(323036509876554)
+
+    #testing decode
+    def test_decode(self):
+        print("Testing TIME decode")
+
+        #bytes encoded acording to cip 
+        time_encoded = bytearray(4)
+        time_encoded[0] = 0xF9
+        time_encoded[1] = 0x55 
+        time_encoded[2] = 0x7C
+        time_encoded[3] = 0xFF #-8628743
+        time_encoded = bytes(time_encoded)
+
+        time_wrong_encoded = bytearray(5)
+        time_wrong_encoded[0] = 0x01
+
+        self.assertEqual(DataType.TIME.decode(time_encoded), -8628743)
+    
+        # check that  fails when the value is not a bytes 
+        with self.assertRaises(TypeError):
+            DataType.TIME.decode(time_wrong_encoded)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TIME.decode(bytes(time_wrong_encoded))
+ 
+    #testing getting ID_Code
+    def test_get_id_code(self):
+        print("Testing TIME getting id_code")
+        self.assertEqual(DataType.TIME.get_id_code(), 0xDB)
+
+    #testing identify
+    def test_identify(self):
+        print("Testing Identifiying ITIME")
+        self.assertEqual(DataType.identify(0xDB), 'TIME')
+
+    #testing to_string
+    def test_to_string(self):
+        print("Testing TIME to string")
+        self.assertEqual(DataType.TIME.to_string(91589566), 'T#1d01h26m29.566s')
+        with self.assertRaises(TypeError):
+            DataType.TIME.to_string(0.1)
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TIME.to_string(0xFFFFFFFF1)
+
+    #testing from_string
+    def test_from_string(self):
+        print("Testing TIME from string")
+        self.assertEqual(DataType.TIME.from_string("T#-11d12h38m11.968s"), -995891968)
+        with self.assertRaises(TypeError):
+            DataType.TIME.from_string("DT#1973-01-25")
+        # check that  fails when the value is out of range
+        with self.assertRaises(ValueError):
+            DataType.TIME.from_string("T#24d20h38m11.968s")
 
 if __name__ == '__main__':
     unittest.main() 

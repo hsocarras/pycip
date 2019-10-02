@@ -111,7 +111,7 @@ class BaseDatatype:
             0xD6 : "FTIME",
             0xD7 : "LTIME",
             0xD8 : "ITIME",
-            0xDA : "SHORT_STRING",
+            0xDA : "SHORTSTRING",
             0xDB : "TIME",
             0xDC : "EPATH",
             0xDD : "ENGUNIT"
