@@ -1,4 +1,5 @@
 
+from .lsegment import LogicalSegment
 
 class Segment:
     """
@@ -19,15 +20,38 @@ class Segment:
 
     staticmethod identify
     """ 
+    
 
     @classmethod
-    def set_segment_type():
-        pass
+    def get_segment(cls, buffer):
+        """ get the segment fom a buffer
 
-    @classmethod
-    def get_segment_type():
-        pass
+        Parameters
+        -----------
 
-    @classmethod
-    def create_logical_segment():
-        pass
+        buffer: bytes or bytesarray 
+                 
+
+        Return
+        ------------
+
+        segment: a segment type instance   
+
+        """
+        segment_class = {
+            0: 'Port',
+            1: LogicalSegment,
+            2: 'Network',
+            3: 'Symbolic',
+            4: 'Data',
+            5: 'DataType C',
+            6: 'DataType E',
+            7: 'Reserved'
+        }
+
+        buffer_class = (buffer[0] & 0xE0) >> 5
+
+        if buffer_class >= 7:
+            raise TypeError('Invalid segment ')
+        else:
+            return segment_class.get(buffer_class).decode(buffer)
